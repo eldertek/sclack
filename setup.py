@@ -5,7 +5,7 @@ with open('README.md', 'r') as readme:
 
 setup(
     name='sclack',
-    version='1.0',
+    version='1.0.1',
     license='GPL3',
     description='The best CLI client for Slack, because everything is terrible',
     long_description=long_description,
@@ -21,12 +21,19 @@ setup(
         'sclack': ['config.json']
     },
     packages=find_packages(),
+    python_requires='>=3.8',
     install_requires=[
-        'asyncio',
-        'urwid>2',
+        'urwid>=2.0.1',
         'pyperclip',
         'requests',
         'slackclient',
         'urwid_readline'
-    ]
+    ],
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+    ],
 )

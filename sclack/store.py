@@ -148,8 +148,8 @@ class Store:
             'users.conversations',
             exclude_archived=True,
             limit=1000,  # 1k is max limit
-            types='public_channel,private_channel,im'
-        )['channels']
+            types='public_channel,private_channel,im,mpim'
+        ).get('channels', [])
 
         for channel in conversations:
             # Public channel
@@ -158,14 +158,16 @@ class Store:
             # Private channel
             elif channel.get('is_group', False):
                 self.state.channels.append(channel)
-            # Direct message
-            elif channel.get('is_im', False) and not channel.get('is_user_deleted', False):
+            # Direct message or group DM
+            elif (channel.get('is_im', False) or channel.get('is_mpim', False)) and not channel.get('is_user_deleted', False):
                 self.state.dms.append(channel)
         self.state.channels.sort(key=lambda channel: channel['name'])
         self.state.dms.sort(key=lambda dm: dm['created'])
 
     def load_groups(self):
-        self.state.groups = filter(lambda c: c['is_group'] is True, self.slack.api_call('conversations.list'))
+        resp = self.slack.api_call('conversations.list')
+        channels = resp.get('channels', []) if isinstance(resp, dict) else []
+        self.state.groups = [c for c in channels if c.get('is_group') is True]
 
     def load_stars(self):
         """
